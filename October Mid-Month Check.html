@@ -1,0 +1,356 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>October Mid-Month Check</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&display=swap">
+<style>
+/* Layout: one narrow reading column. Headline numbers, a bridge from spending so far to the projected month-end with the plan as a reference line, category bars with a plan tick, then the unplanned lines ranked. */
+:root{
+  --bg:#f4f5f4; --surface:#fcfcfb; --ink:#1b2220; --ink2:#47524e; --muted:#6f7a76; --grid:#dfe3e1; --edge:#d3d9d6;
+  --planned:#3a6ea5; --unplanned:#d4602a; --under:#9aa5a1; --due:#7d8a85; --tick:#1b2220; --focus:#1b2220;
+  --f-display:'Bricolage Grotesque','IBM Plex Sans',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121211; --surface:#1a1a19; --ink:#ecefed; --ink2:#b7c0bc; --muted:#8c9692; --grid:#2c302e; --edge:#343937;
+  --planned:#5b92cc; --unplanned:#dc6f33; --under:#6b7571; --due:#98a39f; --tick:#ecefed; --focus:#ecefed; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121211; --surface:#1a1a19; --ink:#ecefed; --ink2:#b7c0bc; --muted:#8c9692; --grid:#2c302e; --edge:#343937;
+  --planned:#5b92cc; --unplanned:#dc6f33; --under:#6b7571; --due:#98a39f; --tick:#ecefed; --focus:#ecefed; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.08;font-weight:700}
+h2{font-size:20px;font-weight:600}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.draft{display:inline-block;border:1px solid var(--unplanned);color:var(--unplanned);border-radius:3px;padding:0 6px;margin-right:8px;font-weight:500}
+.lede{color:var(--ink2);font-size:16px;max-width:62ch;margin:10px 0 0}
+.lede b{color:var(--ink);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--edge);border-radius:6px;padding:14px 16px;min-width:0}
+.kpi .l{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font-family:var(--f-mono);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;margin-top:4px}
+.kpi .s{font-size:13px;color:var(--ink2);margin-top:2px}
+.kpi.hot .v{color:var(--unplanned)}
+section{display:flex;flex-direction:column;gap:12px;min-width:0}
+.sub{color:var(--ink2);margin:0;max-width:66ch;font-size:14px}
+.panel{background:var(--surface);border:1px solid var(--edge);border-radius:6px;padding:16px;min-width:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend i.tick{width:3px;height:14px;border-radius:0;margin-right:7px;vertical-align:-3px;background:var(--tick)}
+.legend i.duekey,.seg.d{background:repeating-linear-gradient(135deg,var(--due) 0 3px,transparent 3px 6px);border:1px solid var(--due)}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:var(--f-body);fill:var(--ink2);font-size:12px}
+svg text.num{font-family:var(--f-mono);fill:var(--ink);font-size:13px;font-variant-numeric:tabular-nums}
+svg .grid{stroke:var(--grid);stroke-width:1}
+.cat{display:grid;grid-template-columns:118px 1fr 196px;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--grid);cursor:default}
+.cat:first-child{border-top:0}
+.cat .n{font-size:14px;font-weight:500}
+.track{position:relative;height:20px}
+.seg{position:absolute;top:0;height:20px}
+.seg.p{background:var(--planned);border-radius:3px 0 0 3px}
+.seg.u{background:var(--unplanned)}
+.seg.d{border-radius:0 3px 3px 0}
+.seg.p.only{border-radius:3px}
+.seg.gap{box-shadow:-2px 0 0 var(--surface)}
+.pt{position:absolute;top:-4px;height:28px;width:3px;background:var(--tick);border-radius:1px;box-shadow:0 0 0 1.5px var(--surface)}
+.cat .a{white-space:nowrap;font-family:var(--f-mono);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;line-height:1.25}
+.cat .a small{display:block;color:var(--muted);font-size:11.5px}
+.cat .a .ov{color:var(--unplanned)}
+.ul{display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:4px 12px;padding:9px 0;border-top:1px solid var(--grid);cursor:default}
+.ul:first-child{border-top:0}
+.ul .t{font-size:14px;font-weight:500;min-width:0}
+.ul .t span{display:block;font-weight:400;font-size:13px;color:var(--ink2)}
+.ul .v{font-family:var(--f-mono);font-size:14px;text-align:right;font-variant-numeric:tabular-nums}
+.ul .bar{grid-column:1/-1;height:8px;background:var(--grid);border-radius:2px;position:relative}
+.ul .bar b{position:absolute;left:0;top:0;bottom:0;background:var(--unplanned);border-radius:2px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.list li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--grid);font-size:14px}
+.list li:first-child{border-top:0}
+.list .m{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.list .d{color:var(--ink2);font-size:13px;display:block}
+details{background:var(--surface);border:1px solid var(--edge);border-radius:6px;padding:12px 16px}
+summary{cursor:pointer;font-weight:500}
+.tw{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
+th,td{text-align:right;padding:7px 8px;border-top:1px solid var(--grid);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase;border-top:0}
+td.f{font-family:var(--f-mono)}
+tr.tot td{font-weight:600;border-top:2px solid var(--edge)}
+.notes{font-size:13px;color:var(--muted);max-width:70ch;display:flex;flex-direction:column;gap:6px}
+.notes p{margin:0}
+#tip{position:fixed;z-index:10;pointer-events:none;background:var(--ink);color:var(--bg);padding:8px 10px;border-radius:5px;font-size:12.5px;line-height:1.4;max-width:260px;opacity:0;transition:opacity .08s}
+#tip b{font-weight:600}
+#tip .r{display:flex;justify-content:space-between;gap:14px;font-family:var(--f-mono)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+details.tx{grid-column:1/-1;margin-top:2px;background:none;border:0;padding:0}
+details.tx>summary{font-size:12.5px;font-weight:400;color:var(--muted)}
+details.tx>summary:hover{color:var(--ink)}
+table.tx{min-width:460px;font-size:13px;margin-top:4px}
+table.tx td{padding:5px 8px;vertical-align:top}
+table.tx td:nth-child(2){text-align:left;color:var(--ink)}
+table.tx td.dt{text-align:left;color:var(--ink2);white-space:nowrap;font-family:var(--f-mono);font-size:12px}
+table.tx td.ac{text-align:left;color:var(--muted);white-space:nowrap;font-size:12px}
+table.tx th:nth-child(2),table.tx th:nth-child(3){text-align:left}
+.tag{display:inline-block;font-size:11px;border:1px solid var(--edge);border-radius:3px;padding:0 5px;margin-left:6px;color:var(--ink2);white-space:nowrap}
+.tag.od{border-color:var(--unplanned);color:var(--unplanned)}
+.drill{display:flex;flex-direction:column;gap:8px}
+.drill>details>summary{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline}
+.drill>details>summary b{font-family:var(--f-display);font-size:16px;font-weight:600;min-width:150px}
+.drill .figs{font-family:var(--f-mono);font-size:12.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.grp{margin-top:14px}
+.grp h3{margin:0 0 4px;font-size:13px;letter-spacing:.05em;text-transform:uppercase;font-weight:500;display:flex;align-items:center;gap:8px}
+.grp h3 i{width:12px;height:12px;border-radius:2px;display:inline-block}
+.line{border-top:1px solid var(--grid);padding:8px 0}
+.line:first-of-type{border-top:0}
+.line .lh{display:flex;justify-content:space-between;gap:12px;font-size:14px;font-weight:500}
+.line .lh span.m{font-family:var(--f-mono);font-size:13px;font-weight:400;font-variant-numeric:tabular-nums;white-space:nowrap}
+.line .lh small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap}
+.ctl button{font:inherit;font-size:13px;background:var(--surface);color:var(--ink);border:1px solid var(--edge);border-radius:5px;padding:5px 12px;cursor:pointer}
+.ctl button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+@media (max-width:520px){
+  .cat{grid-template-columns:1fr 176px;grid-template-areas:"n a" "t t"}
+  .cat .n{grid-area:n}.cat .a{grid-area:a}.cat .track{grid-area:t}
+}
+@media (prefers-reduced-motion:reduce){#tip{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><span class="draft">Draft</span>October 2026 · as of Oct 23 · actuals, T3 plan, T2 still due</div>
+    <h1>October mid-month check</h1>
+    <p class="lede" id="lede"></p>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section>
+    <h2>From spending so far to month-end</h2>
+    <p class="sub">What has been spent so far, plus what is still due, lands on the projected month-end. The dashed line is the T3 plan for the whole month.</p>
+    <div class="panel"><svg id="bridge" viewBox="0 0 760 300" role="img" aria-label="Bridge from spending so far to the projected month-end, with the plan as a reference line"></svg></div>
+  </section>
+
+  <section>
+    <h2>By category</h2>
+    <p class="sub">Each bar is the projected month: spent so far, then still due. Blue is spending on planned lines, orange is unplanned, hatched is still due. The black tick marks the category's plan. Click a category to open its lines.</p>
+    <div class="panel">
+      <div class="legend" style="margin-bottom:8px"><span><i style="background:var(--planned)"></i>On planned lines</span><span><i style="background:var(--unplanned)"></i>Unplanned</span><span><i class="duekey"></i>Still due</span><span><i class="tick"></i>Plan for the category</span></div>
+      <div id="cats"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Unplanned lines so far, largest first</h2>
+    <p class="sub">Every sub-category with spending in October and a $0 plan. Together they come to <b id="u-total" style="color:var(--ink)"></b>.</p>
+    <div class="panel" id="unl"></div>
+  </section>
+
+
+  <section>
+    <h2>Every line, by category</h2>
+    <p class="sub">Open a category to see the planned lines, the unplanned lines and what is still due, with each transaction so far. <b style="color:var(--ink)" id="tx-count"></b> transactions, which add up to the spending so far.</p>
+    <div class="ctl" role="group" aria-label="Show"><button id="f-all" aria-pressed="true">All</button><button id="f-p" aria-pressed="false">Planned lines</button><button id="f-u" aria-pressed="false">Unplanned</button><button id="f-d" aria-pressed="false">Still due</button><button id="f-open" aria-pressed="false">Expand all</button></div>
+    <div class="drill" id="drill"></div>
+  </section>
+
+  <section class="two">
+    <div>
+      <h2 style="margin-bottom:10px">Still due</h2>
+      <div class="panel"><ul class="list" id="due"></ul></div>
+    </div>
+    <div>
+      <h2 style="margin-bottom:10px">In the baseline, not expected now</h2>
+      <div class="panel"><ul class="list" id="dropped"></ul></div>
+    </div>
+    <div>
+      <h2 style="margin-bottom:10px">Paid late, matched to plan</h2>
+      <div class="panel"><ul class="list" id="late"></ul></div>
+    </div>
+  </section>
+
+  <details>
+    <summary>Table view</summary>
+    <div class="tw"><table id="tbl"></table></div>
+  </details>
+
+  <div class="notes">
+    <p><b>How this is counted.</b> Spending so far is the debit amount for rows dated October 2026 in the actual table (E6), through Oct 23. The plan is the debit amount on each T3 row (CJ6), the frozen start-of-month baseline. Balance checks, transfers, income and savings are left out.</p>
+    <p><b>Still due</b> comes from T2 (AT6), the updated plan: rows that still carry a placeholder date, by sub-category, minus what has already been paid on that sub-category. Rows ending in "_late" are matched to the bill they belong to. A line whose planned day has passed is tagged "past planned date".</p>
+    <p>A line is unplanned when its sub-category has no T3 plan amount. Lines in T2 with no T3 amount, such as week-5 groceries and gas, show as still due but not as planned. "In the baseline, not expected now" lists T3 lines that T2 no longer carries and that have no payment. This is a draft: matching is by sub-category label, so a bill paid under a different label shows as both paid and still due.</p>
+  </div>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const DATA = {"meta": {"mid": true, "year": 2026, "month": 10, "monthName": "October", "asOf": "2026-10-23", "asOfLabel": "Oct 23", "source": "E6", "planRef": "CJ6", "t2Ref": "AT6", "planYear": 2026, "workbook": "9f398d32-monthly_budget_checkin_review_OCT_2026_v5_-_10.23v3.xlsx", "generated": "2026-10-23", "planTotal": 8151.25, "onPlanLines": 6187.02, "unplanned": 1973.97, "actual": 8160.99, "stillDue": 2118.69, "projected": 10279.68, "transactions": 107}, "rows": [{"cat": "FOOD", "plan": 1750.0, "onplan": 2164.14, "unplanned": 0.0, "due": 450.0}, {"cat": "??", "plan": 0.0, "onplan": 0.0, "unplanned": 714.27, "due": 0.0}, {"cat": "ENTERTAINMENT", "plan": 44.98, "onplan": 57.94, "unplanned": 557.69, "due": 0.0}, {"cat": "UTIL", "plan": 1992.26, "onplan": 1292.57, "unplanned": 400.0, "due": 699.69}, {"cat": "RANDOM", "plan": 12.0, "onplan": 12.0, "unplanned": 122.78, "due": 0.0}, {"cat": "HEALTH", "plan": 0.0, "onplan": 0.0, "unplanned": 110.5, "due": 0.0}, {"cat": "CREDIT", "plan": 956.0, "onplan": 766.32, "unplanned": 0.0, "due": 300.0}, {"cat": "KIDS", "plan": 245.0, "onplan": 162.73, "unplanned": 50.0, "due": 125.0}, {"cat": "MED", "plan": 318.0, "onplan": 139.0, "unplanned": 18.73, "due": 179.0}, {"cat": "AUTO", "plan": 600.0, "onplan": 316.81, "unplanned": 0.0, "due": 300.0}, {"cat": "DEBT", "plan": 1120.0, "onplan": 1127.5, "unplanned": 0.0, "due": 0.0}, {"cat": "BUSINESS_HAMLY", "plan": 130.99, "onplan": 130.99, "unplanned": 0.0, "due": 0.0}, {"cat": "BUSINESS_RE", "plan": 17.02, "onplan": 17.02, "unplanned": 0.0, "due": 0.0}, {"cat": "HOME", "plan": 65.0, "onplan": 0.0, "unplanned": 0.0, "due": 65.0}, {"cat": "TAXES", "plan": 900.0, "onplan": 0.0, "unplanned": 0.0, "due": 0.0}], "unplanned": [{"main": "??", "sub": "?", "amt": 714.27, "n": 17}, {"main": "UTIL", "sub": "util_HVAC", "amt": 400.0, "n": 1}, {"main": "ENTERTAINMENT", "sub": "entertainment_familynight", "amt": 322.04, "n": 1}, {"main": "ENTERTAINMENT", "sub": "entertainment_datenight", "amt": 136.68, "n": 2}, {"main": "HEALTH", "sub": "health_beauty", "amt": 110.5, "n": 1}, {"main": "ENTERTAINMENT", "sub": "entertainment_holiday", "amt": 98.97, "n": 2}, {"main": "RANDOM", "sub": "random_gifts", "amt": 85.5, "n": 1}, {"main": "KIDS", "sub": "kids_gym", "amt": 50.0, "n": 2}, {"main": "MED", "sub": "med_medicine", "amt": 18.73, "n": 1}, {"main": "RANDOM", "sub": "random_parkingfees", "amt": 17.75, "n": 1}, {"main": "RANDOM", "sub": "random_overdraftfee", "amt": 10.0, "n": 1}, {"main": "RANDOM", "sub": "random_amazon", "amt": 9.53, "n": 1}], "due": [{"sub": "util_country-fi_autoinsurance", "main": "UTIL", "amt": 431.43, "t2": 862.87, "paid": 431.44, "due": "Oct 29", "overdue": false}, {"sub": "food_groceries_wk5", "main": "FOOD", "amt": 350.0, "t2": 350.0, "paid": 0.0, "due": "Oct 31", "overdue": false}, {"sub": "util_power_Grandview", "main": "UTIL", "amt": 242.0, "t2": 484.0, "paid": 242.0, "due": "Oct 26", "overdue": false}, {"sub": "med_doctor visits", "main": "MED", "amt": 179.0, "t2": 179.0, "paid": 0.0, "due": "Oct 31", "overdue": false}, {"sub": "debt_payment_synchrony_auto_chris", "main": "CREDIT", "amt": 150.0, "t2": 249.0, "paid": 99.0, "due": "Oct 28", "overdue": false}, {"sub": "debt_payment_synchrony_auto_inez", "main": "CREDIT", "amt": 150.0, "t2": 263.0, "paid": 113.0, "due": "Oct 28", "overdue": false}, {"sub": "auto_gas_wk4", "main": "AUTO", "amt": 100.0, "t2": 214.94, "paid": 114.94, "due": "Oct 25", "overdue": false}, {"sub": "food_groceries_wk4", "main": "FOOD", "amt": 100.0, "t2": 747.22, "paid": 647.22, "due": "Oct 25", "overdue": false}, {"sub": "auto_maintenance", "main": "AUTO", "amt": 100.0, "t2": 100.0, "paid": 0.0, "due": "Oct 30", "overdue": false}, {"sub": "auto_gas_wk5", "main": "AUTO", "amt": 100.0, "t2": 100.0, "paid": 0.0, "due": "Oct 31", "overdue": false}, {"sub": "home_maintenance", "main": "HOME", "amt": 65.0, "t2": 65.0, "paid": 0.0, "due": "Oct 31", "overdue": false}, {"sub": "kids_allowance_isaiah", "main": "KIDS", "amt": 50.0, "t2": 50.0, "paid": 0.0, "due": "Oct 31", "overdue": false}, {"sub": "kids_allowance_lilyana", "main": "KIDS", "amt": 50.0, "t2": 50.0, "paid": 0.0, "due": "Oct 31", "overdue": false}, {"sub": "util_softwareexpenses_office365", "main": "UTIL", "amt": 26.26, "t2": 30.46, "paid": 4.2, "due": "Oct 27", "overdue": false}, {"sub": "kids_enrichment", "main": "KIDS", "amt": 25.0, "t2": 25.0, "paid": 0.0, "due": "Oct 31", "overdue": false}], "dropped": [{"sub": "taxes_propertytaxes ", "main": "TAXES", "amt": 900.0}], "late": [{"sub": "debt_payment_synchrony_auto_chris", "main": "CREDIT", "plan": 150.0, "paid": 99.0}, {"sub": "debt_payment_synchrony_auto_inez", "main": "CREDIT", "plan": 150.0, "paid": 113.0}, {"sub": "util_country-fi_autoinsurance", "main": "UTIL", "plan": 431.43, "paid": 431.44}, {"sub": "util_power_Grandview", "main": "UTIL", "plan": 242.0, "paid": 242.0}], "tx": [{"d": "2026-10-01", "desc": "HOME AND SEASONS ACWORTH GA 5499 Card 5525", "amt": 124.01, "acct": "delta pay from", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 22}, {"d": "2026-10-01", "desc": "POPSHELF #23627 ACWORTH US Card 5525", "amt": 27.86, "acct": "delta pay from", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 23}, {"d": "2026-10-09", "desc": "DOLLAR TREE 10/08 PURCHASE DALLAS GA", "amt": 80.98, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 24}, {"d": "2026-10-08", "desc": "Journal Voucher ZELLE ASHLEY FISHER 800-544-3328 ZTID#628100M00RGH", "amt": 55, "acct": "delta pay from", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 25}, {"d": "2026-10-05", "desc": "THE UPS STORE 2925 10/04 MOBILE PURCHASE 770-5280901 GA", "amt": 6.29, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 26}, {"d": "2026-10-07", "desc": "TST*DOUCEUR DE FRANCE- Marietta GA 5812 Card 5525", "amt": 86.18, "acct": "delta pay from", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 27}, {"d": "2026-10-16", "desc": "AMAZON MKTPL*4Y3MK5853 10/15 PURCHASE Amzn.com/bill WA", "amt": 65.7, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 28}, {"d": "2026-10-19", "desc": "AMAZON MKTPL*5S7RE2OV3 10/17 PURCHASE Amzn.com/bill WA", "amt": 25.41, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 29}, {"d": "2026-10-19", "desc": "AMAZON MKTPL*JR2QE6JM3 10/17 PURCHASE Amzn.com/bill WA", "amt": 20.98, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 30}, {"d": "2026-10-19", "desc": "AMAZON MKTPL*MA88U16L3 10/15 PURCHASE Amzn.com/bill WA", "amt": 97.47, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 31}, {"d": "2026-10-20", "desc": "AMAZON MKTPL*WF3FI6CB3 10/19 PURCHASE Amzn.com/bill WA", "amt": 40.27, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 32}, {"d": "2026-10-23", "desc": "PURCHASE 10/22 AMAZON MKTPLACE PMTS AMZN.COM/BILL WA", "amt": 26.72, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 33}, {"d": "2026-10-23", "desc": "PURCHASE AMAZON MKTPLACE P Amzn.com/bill WA ON 10/22", "amt": 7.4, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 34}, {"d": "2026-10-21", "desc": "VENMO DES:PAYMENT ID:1053887903878 INDN:INEZ MORGAN CO ID:3264681992 W", "amt": 10, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 35}, {"d": "2026-10-21", "desc": "VENMO DES:PAYMENT ID:1053887908738 INDN:INEZ MORGAN CO ID:3264681992 W", "amt": 10, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 36}, {"d": "2026-10-21", "desc": "VENMO DES:PAYMENT ID:1053887923230 INDN:INEZ MORGAN CO ID:3264681992 W", "amt": 15, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 37}, {"d": "2026-10-21", "desc": "VENMO DES:PAYMENT ID:1053894414125 INDN:INEZ MORGAN CO ID:3264681992 W", "amt": 15, "acct": "boa joint", "main": "??", "sub": "?", "late": false, "cls": "unplanned", "row": 38}, {"d": "2026-10-01", "desc": "KROGER FUEL #1 10/01 PURCHASE ACWORTH GA", "amt": 64.52, "acct": "boa joint", "main": "AUTO", "sub": "auto_gas_wk1", "late": false, "cls": "planned", "row": 39}, {"d": "2026-10-09", "desc": "MURPHY7284ATWA 10/08 PURCHASE DALLAS GA", "amt": 66.57, "acct": "boa joint", "main": "AUTO", "sub": "auto_gas_wk2", "late": false, "cls": "planned", "row": 40}, {"d": "2026-10-13", "desc": "KROGER FUEL #1 10/13 PURCHASE ACWORTH GA", "amt": 70.78, "acct": "boa joint", "main": "AUTO", "sub": "auto_gas_wk3", "late": false, "cls": "planned", "row": 41}, {"d": "2026-10-19", "desc": "KROGER FUEL #1 10/17 PURCHASE PEACHTREE CIT GA", "amt": 59.55, "acct": "boa joint", "main": "AUTO", "sub": "auto_gas_wk4", "late": false, "cls": "planned", "row": 42}, {"d": "2026-10-22", "desc": "KROGER FUEL #1 10/21 PURCHASE MARIETTA GA", "amt": 55.39, "acct": "boa joint", "main": "AUTO", "sub": "auto_gas_wk4", "late": false, "cls": "planned", "row": 43}, {"d": "2026-10-02", "desc": "HIGGSFIELD INC. 10/01 PURCHASE WWW.HIGGSFIEL CA", "amt": 49, "acct": "boa joint", "main": "BUSINESS_HAMLY", "sub": "business_hamly_vendors", "late": false, "cls": "planned", "row": 44}, {"d": "2026-10-02", "desc": "LINODE . AKAMAI 10/01 PURCHASE 8554546633 MA", "amt": 12, "acct": "boa hamly", "main": "BUSINESS_HAMLY", "sub": "business_hamly_vendors", "late": false, "cls": "planned", "row": 45}, {"d": "2026-10-05", "desc": "ANTHROPIC* CLAUDE SUB 10/02 PURCHASE ANTHROPIC.COM CA", "amt": 20, "acct": "boa joint", "main": "BUSINESS_HAMLY", "sub": "business_hamly_vendors", "late": false, "cls": "planned", "row": 46}, {"d": "2026-10-09", "desc": "SUNO INC. 10/08 PURCHASE SUNO.COM MA", "amt": 10, "acct": "boa joint", "main": "BUSINESS_HAMLY", "sub": "business_hamly_vendors", "late": false, "cls": "planned", "row": 47}, {"d": "2026-10-13", "desc": "LALAL.AI 10/10 PURCHASE ROTKREUZ", "amt": 9.99, "acct": "boa joint", "main": "BUSINESS_HAMLY", "sub": "business_hamly_vendors", "late": false, "cls": "planned", "row": 48}, {"d": "2026-10-20", "desc": "OBSIDIAN 10/19 PURCHASE OAKVILLE ON", "amt": 10, "acct": "boa joint", "main": "BUSINESS_HAMLY", "sub": "business_hamly_vendors", "late": false, "cls": "planned", "row": 49}, {"d": "2026-10-21", "desc": "OPENAI *CHATGPT SUBSCR 10/20 PURCHASE OPENAI.COM CA", "amt": 20, "acct": "boa joint", "main": "BUSINESS_HAMLY", "sub": "business_hamly_vendors", "late": false, "cls": "planned", "row": 50}, {"d": "2026-10-05", "desc": "SUPRA RE 10/01 PURCHASE 877-699-6787 FL", "amt": 17.02, "acct": "boa joint", "main": "BUSINESS_RE", "sub": "business_realestate_supra", "late": false, "cls": "planned", "row": 51}, {"d": "2026-10-16", "desc": "CHASE CREDIT CRD DES:EPAY ID:9796951246 INDN:INEZ M MORGAN CO ID:57600", "amt": 129.32, "acct": "boa joint", "main": "CREDIT", "sub": "credit_payment_credit cards_chase_amazon", "late": false, "cls": "planned", "row": 52}, {"d": "2026-10-05", "desc": "CAPITAL ONE DES:MOBILE PMT ID:CA0F1074C68ACA7 INDN:Inez McDonald CO ID", "amt": 100, "acct": "boa joint", "main": "CREDIT", "sub": "debt_payment_credit cards_cap1_inez", "late": false, "cls": "planned", "row": 53}, {"d": "2026-10-15", "desc": "CAPITAL ONE DES:MOBILE PMT ID:CA05997F3C40CD1 INDN:Inez McDonald CO ID", "amt": 150, "acct": "boa joint", "main": "CREDIT", "sub": "debt_payment_credit cards_cap1_inez", "late": false, "cls": "planned", "row": 54}, {"d": "2026-10-17", "desc": "To Loan 0040", "amt": 400, "acct": "delta pay from", "main": "DEBT", "sub": "debt_payment_delta_loan", "late": false, "cls": "planned", "row": 55}, {"d": "2026-10-19", "desc": "OBP*LGECOMMU7704240060 10/17 PURCHASE HTTPS://LGECC GA", "amt": 727.5, "acct": "boa joint", "main": "DEBT", "sub": "debt_payment_lge_autoloan_2024chryslerpacifica", "late": false, "cls": "planned", "row": 56}, {"d": "2026-10-19", "desc": "PAYPAL DES:INST XFER ID:1053823480303 INDN:INEZ MORGAN CO ID:PAYPALSI7", "amt": 175, "acct": "boa joint", "main": "CREDIT", "sub": "debt_payment_paypal", "late": false, "cls": "planned", "row": 57}, {"d": "2026-10-19", "desc": "Synchrony Bank DES:CC PYMT ID:650159040732691 INDN:CHRISTOPHER MCDONAL", "amt": 99, "acct": "boa joint", "main": "CREDIT", "sub": "debt_payment_synchrony_auto_chris", "late": true, "cls": "planned", "row": 58}, {"d": "2026-10-19", "desc": "Synchrony Bank DES:CC PYMT ID:650159040732748 INDN:INEZ MCDONALD CO ID", "amt": 113, "acct": "boa joint", "main": "CREDIT", "sub": "debt_payment_synchrony_auto_inez", "late": true, "cls": "planned", "row": 59}, {"d": "2026-10-06", "desc": "CHEDDAR'S ZK 0202232 10/04 PURCHASE KENNESAW GA", "amt": 72.16, "acct": "boa joint", "main": "ENTERTAINMENT", "sub": "entertainment_datenight", "late": false, "cls": "unplanned", "row": 60}, {"d": "2026-10-09", "desc": "REV CAFE ACWORTH 10/08 PURCHASE ACWORTH GA", "amt": 64.52, "acct": "boa joint", "main": "ENTERTAINMENT", "sub": "entertainment_datenight", "late": false, "cls": "unplanned", "row": 61}, {"d": "2026-10-04", "desc": "GREAT SMOKY MTNS RAILRO 828-631-6104 NC 7991 Card 5525", "amt": 322.04, "acct": "delta pay from", "main": "ENTERTAINMENT", "sub": "entertainment_familynight", "late": false, "cls": "unplanned", "row": 62}, {"d": "2026-10-19", "desc": "POSHMARK 10/17 PURCHASE 650-488-7740 CA", "amt": 33.38, "acct": "boa joint", "main": "ENTERTAINMENT", "sub": "entertainment_holiday", "late": false, "cls": "unplanned", "row": 63}, {"d": "2026-10-19", "desc": "SPIRIT HALLOWEEN 61058 10/16 PURCHASE MIAMI GA", "amt": 65.59, "acct": "boa joint", "main": "ENTERTAINMENT", "sub": "entertainment_holiday", "late": false, "cls": "unplanned", "row": 64}, {"d": "2026-10-13", "desc": "NETFLIX.COM 10/12 PURCHASE LOS GATOS CA", "amt": 19.99, "acct": "boa joint", "main": "ENTERTAINMENT", "sub": "entertainment_netflix", "late": false, "cls": "planned", "row": 65}, {"d": "2026-10-19", "desc": "APPLE.COM/BILL 10/17 PURCHASE 8667127753 CA", "amt": 10.98, "acct": "boa hamly", "main": "ENTERTAINMENT", "sub": "entertainment_phoneapppurchases", "late": false, "cls": "planned", "row": 66}, {"d": "2026-10-19", "desc": "APPLE.COM/BILL 10/19 PURCHASE 8667127753 CA", "amt": 17.99, "acct": "boa hamly", "main": "ENTERTAINMENT", "sub": "entertainment_phoneapppurchases", "late": false, "cls": "planned", "row": 67}, {"d": "2026-10-19", "desc": "GOOGLE *Google One 10/15 PURCHASE 855-836-3987 CA", "amt": 1.99, "acct": "boa joint", "main": "ENTERTAINMENT", "sub": "entertainment_phoneapppurchases", "late": false, "cls": "planned", "row": 68}, {"d": "2026-10-21", "desc": "PLEXINC*PASS MONTHLY 10/20 PURCHASE PLEX.TV CA", "amt": 6.99, "acct": "boa joint", "main": "ENTERTAINMENT", "sub": "entertainment_plexpass", "late": false, "cls": "planned", "row": 69}, {"d": "2026-10-01", "desc": "COSTCO WHSE#1389 DALLAS GA 5300 Card 5525", "amt": 102.89, "acct": "delta pay from", "main": "FOOD", "sub": "food_groceries_wk1", "late": false, "cls": "planned", "row": 70}, {"d": "2026-10-02", "desc": "Total Wine 802 POS 10/01 PURCHASE Kennesaw GA", "amt": 51.92, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk1", "late": false, "cls": "planned", "row": 71}, {"d": "2026-10-01", "desc": "Total Wine 805 10/01 PURCHASE Atlanta GA", "amt": 66.2, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk1", "late": false, "cls": "planned", "row": 72}, {"d": "2026-10-02", "desc": "TST*VFW POST 5408 09/30 PURCHASE Acworth GA", "amt": 39.5, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk1", "late": false, "cls": "planned", "row": 73}, {"d": "2026-10-08", "desc": "COSTCO WHSE#1389 DALLAS GA 5300 Card 5525", "amt": 4.57, "acct": "delta pay from", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 74}, {"d": "2026-10-05", "desc": "KROGER #442 10/03 PURCHASE ACWORTH GA", "amt": 110.07, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 75}, {"d": "2026-10-05", "desc": "KROGER #442 10/05 PURCHASE ACWORTH GA", "amt": 70.19, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 76}, {"d": "2026-10-05", "desc": "KROGER #5001 10/02 PURCHASE ATLANTA GA", "amt": 82.62, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 77}, {"d": "2026-10-05", "desc": "KROGER #5001 10/02 PURCHASE ATLANTA GA", "amt": 42.67, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 78}, {"d": "2026-10-07", "desc": "KROGER #5001 10/07 PURCHASE ATLANTA GA", "amt": 139.32, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 79}, {"d": "2026-10-09", "desc": "KROGER #673 10/09 PURCHASE DALLAS GA", "amt": 165.75, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 80}, {"d": "2026-10-08", "desc": "SQ *BURNT HICKORY 10/07 PURCHASE Powder Spring GA", "amt": 20, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 81}, {"d": "2026-10-05", "desc": "WAL-MART #3748 10/03 PURCHASE ACWORTH GA", "amt": 42.5, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk2", "late": false, "cls": "planned", "row": 82}, {"d": "2026-10-15", "desc": "CHICK-FIL-A #00940 10/13 PURCHASE DOUGLASVILLE GA", "amt": 12.38, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 83}, {"d": "2026-10-15", "desc": "FWD*EVEREST SPIRITS WA MARIETTA GA 5921 Card 3558", "amt": 48.72, "acct": "delta pay from", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 84}, {"d": "2026-10-13", "desc": "KENNESTONE CAFE MARIETTA GA 8099 Card 5525", "amt": 6.01, "acct": "delta pay from", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 85}, {"d": "2026-10-14", "desc": "KROGER #442 10/13 PURCHASE ACWORTH GA", "amt": 12.27, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 86}, {"d": "2026-10-14", "desc": "KROGER #442 10/14 PURCHASE ACWORTH GA", "amt": 44.96, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 87}, {"d": "2026-10-13", "desc": "KROGER #634 10/11 PURCHASE DALLAS GA", "amt": 25.04, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 88}, {"d": "2026-10-16", "desc": "KROGER 356 10/16 PURCHASE MARIETTA GA", "amt": 59.37, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 89}, {"d": "2026-10-13", "desc": "MCDONALD'S F31610 ACWORTH GA 5814 Card 5525", "amt": 13.52, "acct": "delta pay from", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 90}, {"d": "2026-10-13", "desc": "MCDONALD'S F31610 ACWORTH GA 5814 Card 5525", "amt": 17.46, "acct": "delta pay from", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 91}, {"d": "2026-10-13", "desc": "MCDONALD'S F32523 10/09 PURCHASE ACWORTH GA", "amt": 14.37, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 92}, {"d": "2026-10-13", "desc": "PAPA JOHNS #420 10/11 PURCHASE POWDER SPRING GA", "amt": 40.79, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 93}, {"d": "2026-10-13", "desc": "PUBLIX #566 10/09 PURCHASE ACWORTH GA", "amt": 78.3, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 94}, {"d": "2026-10-13", "desc": "SAMSCLUB #4802 10/10 PURCHASE HIRAM GA", "amt": 102.18, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 95}, {"d": "2026-10-15", "desc": "SQ *BURNT HICKORY 10/14 PURCHASE Powder Spring GA", "amt": 40, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 96}, {"d": "2026-10-12", "desc": "TEZ*Wellstar Kennestone 612-8106109 MN 7523 Card 5525", "amt": 7.2, "acct": "delta pay from", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 97}, {"d": "2026-10-15", "desc": "Total Wine 805 POS 10/14 PURCHASE Atlanta GA", "amt": 56.15, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk3", "late": false, "cls": "planned", "row": 98}, {"d": "2026-10-19", "desc": "KROGER #5001 10/18 PURCHASE ATLANTA GA", "amt": 220.75, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk4", "late": false, "cls": "planned", "row": 99}, {"d": "2026-10-22", "desc": "KROGER #5001 10/22 PURCHASE ATLANTA GA", "amt": 141.31, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk4", "late": false, "cls": "planned", "row": 100}, {"d": "2026-10-19", "desc": "PURCHASE 10/18 KROGER #5001 ATLANTA GA", "amt": 212.86, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk4", "late": false, "cls": "planned", "row": 101}, {"d": "2026-10-19", "desc": "PURCHASE 10/18 KROGER #5001 ATLANTA GA", "amt": 7.89, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk4", "late": false, "cls": "planned", "row": 102}, {"d": "2026-10-19", "desc": "SQ *LONGHORN WEST COBB 10/16 MOBILE PURCHASE Kennesaw GA", "amt": 12, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk4", "late": false, "cls": "planned", "row": 103}, {"d": "2026-10-19", "desc": "SQ *THE DRIP COMPANY 10/16 MOBILE PURCHASE Kennesaw GA", "amt": 7.28, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk4", "late": false, "cls": "planned", "row": 104}, {"d": "2026-10-22", "desc": "TARGET T-2091 10/22 PURCHASE Acworth GA", "amt": 45.13, "acct": "boa joint", "main": "FOOD", "sub": "food_groceries_wk4", "late": false, "cls": "planned", "row": 105}, {"d": "2026-10-01", "desc": "RIO BODY WAX -DALLAS 09/30 PURCHASE DALLAS GA", "amt": 110.5, "acct": "boa joint", "main": "HEALTH", "sub": "health_beauty", "late": false, "cls": "unplanned", "row": 106}, {"d": "2026-10-19", "desc": "GYMNASTICS ACADEMY OF A 10/16 PURCHASE 770-9758337 GA", "amt": 45, "acct": "boa joint", "main": "KIDS", "sub": "kids_gym", "late": false, "cls": "unplanned", "row": 107}, {"d": "2026-10-19", "desc": "GYMNASTICS ACADEMY OF A 10/16 PURCHASE 770-9758337 GA", "amt": 5, "acct": "boa joint", "main": "KIDS", "sub": "kids_gym", "late": false, "cls": "unplanned", "row": 108}, {"d": "2026-10-05", "desc": "COBBCTYSCHOOLSMSBCAFEPM 10/02 PURCHASE 800-8036755 GA", "amt": 12.49, "acct": "boa joint", "main": "KIDS", "sub": "kids_school_purchases", "late": false, "cls": "planned", "row": 109}, {"d": "2026-10-13", "desc": "COBBCTYSCHOOLSMSBCAFEPM 10/09 PURCHASE 800-8036755 GA", "amt": 12.49, "acct": "boa joint", "main": "KIDS", "sub": "kids_school_purchases", "late": false, "cls": "planned", "row": 110}, {"d": "2026-10-19", "desc": "ATLANTA GRAD CO 10/16 PURCHASE ATLANTAGRAD.C GA", "amt": 137.75, "acct": "boa joint", "main": "KIDS", "sub": "kids_school_purchases", "late": false, "cls": "planned", "row": 111}, {"d": "2026-10-23", "desc": "PURCHASE PUBLIX #566 ACWORTH GA ON 10/22", "amt": 18.73, "acct": "boa joint", "main": "MED", "sub": "med_medicine", "late": false, "cls": "unplanned", "row": 154}, {"d": "2026-10-19", "desc": "NORTHWEST COBB YMCA 10/15 PURCHASE 404-588-9622 GA", "amt": 139, "acct": "boa joint", "main": "MED", "sub": "med_YMCA", "late": false, "cls": "planned", "row": 155}, {"d": "2026-10-05", "desc": "AMAZON MKTPL*515FF8940 10/02 PURCHASE Amzn.com/bill WA", "amt": 9.53, "acct": "boa joint", "main": "RANDOM", "sub": "random_amazon", "late": false, "cls": "unplanned", "row": 156}, {"d": "2026-10-19", "desc": "Monthly Maintenance Fee", "amt": 12, "acct": "boa hamly", "main": "RANDOM", "sub": "random_fee_monthly_maintenance_fee", "late": false, "cls": "planned", "row": 157}, {"d": "2026-10-22", "desc": "TARGET T-2091 10/22 PURCHASE Acworth GA", "amt": 85.5, "acct": "boa joint", "main": "RANDOM", "sub": "random_gifts", "late": false, "cls": "unplanned", "row": 158}, {"d": "2026-10-02", "desc": "OVERDRAFT ITEM FEE FOR ACTIVITY OF 10-02 ELECTRONIC TRANSACTION POSTIN", "amt": 10, "acct": "boa hamly", "main": "RANDOM", "sub": "random_overdraftfee", "late": false, "cls": "unplanned", "row": 159}, {"d": "2026-10-22", "desc": "PMC - PAID PARKING 10/21 PURCHASE PARKINGMGT.CO TN", "amt": 17.75, "acct": "boa joint", "main": "RANDOM", "sub": "random_parkingfees", "late": false, "cls": "unplanned", "row": 160}, {"d": "2026-10-02", "desc": "CCS COUNTRY FINANCIAL 09/30 PURCHASE 866-268-6879 IL", "amt": 431.44, "acct": "boa joint", "main": "UTIL", "sub": "util_country-fi_autoinsurance", "late": true, "cls": "planned", "row": 164}, {"d": "2026-10-19", "desc": "CONSTELLATION NEW ENERG 10/17 PURCHASE 312-394-7399 IL", "amt": 76.94, "acct": "boa joint", "main": "UTIL", "sub": "util_gas", "late": false, "cls": "planned", "row": 165}, {"d": "2026-10-16", "desc": "Zelle payment to Sam Hvac Conf# cgor4msm9", "amt": 400, "acct": "boa joint", "main": "UTIL", "sub": "util_HVAC", "late": false, "cls": "unplanned", "row": 166}, {"d": "2026-10-20", "desc": "ATT DES:PAYMENT ID:028023004SMT2R INDN:CHRISTOPHER M MCDONALD CO ID:98", "amt": 105.93, "acct": "boa joint", "main": "UTIL", "sub": "util_phone", "late": false, "cls": "planned", "row": 167}, {"d": "2026-10-16", "desc": "UNITED OF OMAHA DES: INS PREM ID:FBNNI2OCT-26 INDN:INEZ MCDONALD CO ID", "amt": 214.82, "acct": "boa joint", "main": "UTIL", "sub": "util_placeholder_insurance2023", "late": false, "cls": "planned", "row": 168}, {"d": "2026-10-22", "desc": "SBLI DES:PREMIUM ID:*****600138564 INDN:INEZ MCDONALD CO ID:D043117253", "amt": 112.23, "acct": "boa joint", "main": "UTIL", "sub": "util_placeholder_insurance2023", "late": false, "cls": "planned", "row": 169}, {"d": "2026-10-02", "desc": "Cobb EMC DES:WEB PMTS ID:B24B3T INDN:Inez Mcdonald CO ID:9000260682 WE", "amt": 242, "acct": "boa joint", "main": "UTIL", "sub": "util_power_Grandview", "late": true, "cls": "planned", "row": 170}, {"d": "2026-10-06", "desc": "MICROSOFT#G188729555 10/06 PURCHASE MSBILL.INFO WA", "amt": 4.2, "acct": "boa joint", "main": "UTIL", "sub": "util_softwareexpenses_office365", "late": false, "cls": "planned", "row": 171}, {"d": "2026-10-20", "desc": "COBB COUNTY UTILITY BIL 10/19 PURCHASE 770-419-6200 GA", "amt": 92.11, "acct": "boa joint", "main": "UTIL", "sub": "util_water", "late": false, "cls": "planned", "row": 172}, {"d": "2026-10-08", "desc": "ZDR* Zander IDTheft 10/07 PURCHASE 800-3564282 TN", "amt": 12.9, "acct": "boa joint", "main": "UTIL", "sub": "util_zander", "late": false, "cls": "planned", "row": 173}], "planlines": [{"sub": "auto_gas_wk1", "main": "AUTO", "plan": 100.0}, {"sub": "auto_gas_wk2", "main": "AUTO", "plan": 100.0}, {"sub": "auto_gas_wk3", "main": "AUTO", "plan": 100.0}, {"sub": "auto_gas_wk4", "main": "AUTO", "plan": 200.0}, {"sub": "auto_maintenance", "main": "AUTO", "plan": 100.0}, {"sub": "business_hamly_vendors", "main": "BUSINESS_HAMLY", "plan": 130.99}, {"sub": "business_realestate_supra", "main": "BUSINESS_RE", "plan": 17.02}, {"sub": "credit_payment_credit cards_chase_amazon", "main": "CREDIT", "plan": 100.0}, {"sub": "debt_payment_credit cards_cap1_inez", "main": "CREDIT", "plan": 182.0}, {"sub": "debt_payment_delta_loan", "main": "DEBT", "plan": 400.0}, {"sub": "debt_payment_lge_autoloan_2024chryslerpacifica", "main": "DEBT", "plan": 720.0}, {"sub": "debt_payment_paypal", "main": "CREDIT", "plan": 74.0}, {"sub": "debt_payment_synchrony_auto_chris", "main": "CREDIT", "plan": 150.0}, {"sub": "debt_payment_synchrony_auto_chris_late", "main": "CREDIT", "plan": 150.0}, {"sub": "debt_payment_synchrony_auto_inez", "main": "CREDIT", "plan": 150.0}, {"sub": "debt_payment_synchrony_auto_inez_late", "main": "CREDIT", "plan": 150.0}, {"sub": "entertainment_netflix", "main": "ENTERTAINMENT", "plan": 19.99}, {"sub": "entertainment_phoneapppurchases", "main": "ENTERTAINMENT", "plan": 18.0}, {"sub": "entertainment_plexpass", "main": "ENTERTAINMENT", "plan": 6.99}, {"sub": "food_groceries_wk1", "main": "FOOD", "plan": 350.0}, {"sub": "food_groceries_wk2", "main": "FOOD", "plan": 350.0}, {"sub": "food_groceries_wk3", "main": "FOOD", "plan": 350.0}, {"sub": "food_groceries_wk4", "main": "FOOD", "plan": 700.0}, {"sub": "home_maintenance", "main": "HOME", "plan": 65.0}, {"sub": "kids_allowance_isaiah", "main": "KIDS", "plan": 50.0}, {"sub": "kids_allowance_lilyana", "main": "KIDS", "plan": 50.0}, {"sub": "kids_enrichment", "main": "KIDS", "plan": 25.0}, {"sub": "kids_school_purchases", "main": "KIDS", "plan": 120.0}, {"sub": "med_doctor visits", "main": "MED", "plan": 179.0}, {"sub": "med_YMCA", "main": "MED", "plan": 139.0}, {"sub": "random_fee_monthly_maintenance_fee", "main": "RANDOM", "plan": 12.0}, {"sub": "taxes_propertytaxes ", "main": "TAXES", "plan": 900.0}, {"sub": "util_country-fi_autoinsurance", "main": "UTIL", "plan": 431.43}, {"sub": "util_country-fi_autoinsurance_late", "main": "UTIL", "plan": 431.44}, {"sub": "util_gas", "main": "UTIL", "plan": 76.94}, {"sub": "util_phone", "main": "UTIL", "plan": 105.93}, {"sub": "util_placeholder_insurance2023", "main": "UTIL", "plan": 327.05}, {"sub": "util_power_Grandview", "main": "UTIL", "plan": 242.0}, {"sub": "util_power_Grandview_late", "main": "UTIL", "plan": 242.0}, {"sub": "util_softwareexpenses_office365", "main": "UTIL", "plan": 30.46}, {"sub": "util_water", "main": "UTIL", "plan": 92.11}, {"sub": "util_zander", "main": "UTIL", "plan": 12.9}], "ann": {"subs": {"util_HVAC": ["HVAC", ""], "entertainment_familynight": ["Family night", ""], "entertainment_datenight": ["Date night", ""], "entertainment_holiday": ["Holiday", ""], "health_beauty": ["Beauty", ""], "kids_gym": ["Kids gym", ""], "random_overdraftfee": ["Overdraft fees", ""], "random_amazon": ["Amazon, not categorized", ""], "util_country-fi_homeinsurance": ["Home insurance", ""], "util_country-fi_autoinsurance": ["Auto insurance", ""], "util_power_Grandview": ["Power, Grandview", ""], "debt_payment_credit cards_cap1_inez": ["Capital One card (Inez)", ""], "debt_payment_synchrony_auto_inez": ["Synchrony auto (Inez)", ""], "debt_payment_synchrony_auto_chris": ["Synchrony auto (Chris)", ""], "food_groceries_wk5": ["Groceries & dining, week 5", ""], "auto_gas_wk5": ["Gas, week 5", ""], "?": ["Not yet categorized", "Rows still labeled ?? in the sheet. Give them a category and rebuild."], "taxes_propertytaxes": ["Property taxes", ""], "taxes_propertytaxes ": ["Property taxes", ""]}}};
+const $ = id => document.getElementById(id);
+const usd = (n,c) => (n<0?'−':'') + '$' + Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:c?2:0,maximumFractionDigits:c?2:0});
+const NAMES = {UTIL:'Utilities',KIDS:'Kids',ENTERTAINMENT:'Entertainment',FOOD:'Food',TAXES:'Taxes',RANDOM:'Fees & misc',AUTO:'Auto',MED:'Medical',HEALTH:'Health',HOME:'Home',BUSINESS_RE:'Business (real estate)',BUSINESS_HAMLY:'Business (Hamly)',DEBT:'Loans',CREDIT:'Credit cards',GIVING:'Giving','??':'Uncategorized'};
+const SUBS = (DATA.ann && DATA.ann.subs) || {};
+const prettySub = (sub,main) => { const m={UTIL:'util_',FOOD:'food_',AUTO:'auto_',KIDS:'kids_',ENTERTAINMENT:'entertainment_',BUSINESS_HAMLY:'business_hamly_',BUSINESS_RE:'business_realestate_',MED:'med_',RANDOM:'random_',DEBT:'debt_payment_',CREDIT:'debt_payment_',GIVING:'giving_',HEALTH:'health_',HOME:'home_',TAXES:'taxes_'}; let s=String(sub).trim().replace(/^credit_payment_/,'').replace(m[main]||'',''); s=s.replace(/_/g,' ').trim(); return s.charAt(0).toUpperCase()+s.slice(1); };
+const subName = (sub,main) => (SUBS[sub]||[null])[0] || prettySub(sub,main);
+const subNote = sub => (SUBS[sub]||['',''])[1] || '';
+const MONTH = DATA.meta.monthName, ASOF = DATA.meta.asOfLabel;
+const R = DATA.rows, TX = DATA.tx, PL = {}; DATA.planlines.forEach(p=>PL[p.sub]=p);
+const tp = R.reduce((s,r)=>s+r.plan,0), ton = R.reduce((s,r)=>s+r.onplan,0), tu = R.reduce((s,r)=>s+r.unplanned,0), td = R.reduce((s,r)=>s+r.due,0);
+const ta = ton+tu, proj = ta+td, gapP = proj-tp;
+const sgn = n => (n<0?'−':'+')+usd(Math.abs(n));
+const uncat = DATA.unplanned.filter(u=>u.main==='??').reduce((s,u)=>s+u.amt,0);
+const top3 = DATA.unplanned.filter(u=>u.main!=='??').slice(0,3).map(u=>subName(u.sub,u.main));
+const list3 = top3.length>1 ? top3.slice(0,-1).join(', ')+' and '+top3[top3.length-1] : (top3[0]||'none');
+$('lede').innerHTML = `As of <b>${ASOF}</b>, spending is <b>${usd(ta)}</b> against a <b>${usd(tp)}</b> plan for the whole month. <b>${usd(tu)}</b> of it went to lines with no plan amount${uncat>0?`, <b>${usd(uncat)}</b> of that not yet categorized`:''}. The largest named lines are ${list3}. `+
+  `Another <b>${usd(td)}</b> is still due, which projects the month to <b>${usd(proj)}</b>, <b>${usd(Math.abs(gapP))}</b> ${gapP>=0?'over':'under'} plan.`;
+$('u-total').textContent = usd(tu);
+
+$('kpis').innerHTML = [
+ ['Planned',usd(tp),'T3 plan, full month',''],
+ ['Spent so far',usd(ta),'through '+ASOF,''],
+ ['Still due',usd(td),DATA.due.length+' lines, T2',''],
+ ['Projected',usd(proj),Math.round(Math.abs(gapP)/tp*100)+'% '+(gapP>=0?'above':'below')+' plan, '+sgn(gapP),gapP>=0?'hot':''],
+ ['Unplanned so far',usd(tu),Math.round(tu/ta*100)+'% of spending so far','hot']
+].map(k=>`<div class="kpi ${k[3]}"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('');
+
+/* tooltip */
+const tip = $('tip');
+function showTip(html,e){tip.innerHTML=html;tip.style.opacity=1;moveTip(e)}
+function moveTip(e){const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8),y=e.clientY+16>innerHeight-tip.offsetHeight-8?e.clientY-tip.offsetHeight-12:e.clientY+16;tip.style.left=Math.max(8,x)+'px';tip.style.top=y+'px'}
+function hideTip(){tip.style.opacity=0}
+function hover(el,html){
+  el.addEventListener('mousemove',e=>showTip(html,e));el.addEventListener('mouseleave',hideTip);
+  el.addEventListener('focus',()=>{const b=el.getBoundingClientRect();showTip(html,{clientX:b.left+40,clientY:b.top});});el.addEventListener('blur',hideTip);
+}
+const row = (a,b)=>`<div class="r"><span>${a}</span><span>${b}</span></div>`;
+const HR = '<hr style="border:0;border-top:1px solid rgba(255,255,255,.25);margin:4px 0">';
+
+/* bridge: spent so far -> projected, plan as a reference line */
+(function(){
+ const W=760,H=300,L=58,Rr=16,T=34,B=62, pw=W-L-Rr, ph=H-T-B;
+ const max=Math.ceil(Math.max(proj,tp)/2000)*2000, y=v=>T+ph-(v/max)*ph;
+ const cols=[
+  {k:'On planned lines',a:0,b:ton,type:'on',label:usd(ton),sub:'spent so far'},
+  {k:'Unplanned',a:ton,b:ta,type:'un',label:'+'+usd(tu),sub:'no plan line'},
+  {k:'Still due',a:ta,b:proj,type:'due',label:'+'+usd(td),sub:'T2, not yet paid'},
+  {k:'Projected',a:0,b:proj,type:'proj',label:usd(proj),sub:'month-end'}];
+ const bw=118, step=(pw-bw)/(cols.length-1);
+ let s='<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--surface)"/><rect width="3" height="6" fill="var(--due)"/></pattern></defs>';
+ for(let t=0;t<=max;t+=2000){s+=`<line class="grid" x1="0" x2="${W-Rr}" y1="${y(t)}" y2="${y(t)}"/><text x="0" y="${y(t)-4}" style="font-size:11px;fill:var(--muted)">${usd(t)}</text>`}
+ cols.forEach((c,i)=>{
+  const x=L+i*step; let inner='';
+  if(c.type==='on') inner=`<rect x="${x}" y="${y(c.b)}" width="${bw}" height="${y(0)-y(c.b)}" fill="var(--planned)" rx="3"/>`;
+  if(c.type==='un') inner=`<rect x="${x}" y="${y(c.b)}" width="${bw}" height="${y(c.a)-y(c.b)}" fill="var(--unplanned)" rx="3"/>`;
+  if(c.type==='due') inner=`<rect x="${x}" y="${y(c.b)}" width="${bw}" height="${y(c.a)-y(c.b)}" fill="url(#hatch)" stroke="var(--due)" rx="3"/>`;
+  if(c.type==='proj') inner=`<rect x="${x}" y="${y(ton)}" width="${bw}" height="${y(0)-y(ton)-1}" fill="var(--planned)" rx="3"/><rect x="${x}" y="${y(ta)}" width="${bw}" height="${y(ton)-y(ta)-2}" fill="var(--unplanned)" rx="3"/><rect x="${x}" y="${y(proj)}" width="${bw}" height="${y(ta)-y(proj)-2}" fill="url(#hatch)" stroke="var(--due)" rx="3"/>`;
+  s+=`<g tabindex="0" data-i="${i}">${inner}<text class="num" x="${x+bw/2}" y="${y(c.b)-8}" text-anchor="middle">${c.label}</text><text x="${x+bw/2}" y="${H-34}" text-anchor="middle" style="font-weight:500;fill:var(--ink)">${c.k}</text><text x="${x+bw/2}" y="${H-18}" text-anchor="middle" style="font-size:11px;fill:var(--muted)">${c.sub}</text></g>`;
+  if(i<cols.length-1){const ly=y(c.type==='on'?ton:c.type==='un'?ta:proj); s+=`<line x1="${x+bw}" x2="${x+step}" y1="${ly}" y2="${ly}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>`}
+ });
+ s+=`<line x1="${L-4}" x2="${W-Rr}" y1="${y(tp)}" y2="${y(tp)}" stroke="var(--tick)" stroke-width="1.5" stroke-dasharray="6 4"/><text x="${L}" y="${y(tp)-6}" style="font-weight:500;fill:var(--ink)">Plan ${usd(tp)}</text>`;
+ $('bridge').innerHTML=s;
+ const tips=[
+  row('On planned lines',usd(ton,1))+'<div style="margin-top:4px;opacity:.85">Paid so far through '+ASOF+' on lines with a T3 plan amount.</div>',
+  row('Spent with no plan',usd(tu,1))+'<div style="margin-top:4px;opacity:.85">'+DATA.unplanned.length+' lines. Largest: '+(DATA.unplanned[0]?subName(DATA.unplanned[0].sub,DATA.unplanned[0].main)+' '+usd(DATA.unplanned[0].amt,1):'none')+'.</div>',
+  row('Still due (T2)',usd(td,1))+'<div style="margin-top:4px;opacity:.85">'+DATA.due.length+' lines not yet paid. '+DATA.due.filter(d=>d.overdue).length+' are past their planned day.</div>',
+  row('Spent so far',usd(ta,1))+row('Still due',usd(td,1))+HR+row('Projected',usd(proj,1))+row('Plan',usd(tp,1))+row('vs plan',sgn(gapP))];
+ $('bridge').querySelectorAll('g').forEach(g=>hover(g,tips[+g.dataset.i]));
+})();
+
+/* categories */
+const CATROWS = R.slice().sort((a,b)=>(b.onplan+b.unplanned+b.due)-(a.onplan+a.unplanned+a.due));
+(function(){
+ const rows=CATROWS;
+ const max=Math.max(...rows.map(r=>Math.max(r.plan,r.onplan+r.unplanned+r.due)))*1.03;
+ $('cats').innerHTML=rows.map((r,i)=>{
+  const sp=r.onplan+r.unplanned, tot=sp+r.due, over=tot-r.plan;
+  const pw=r.onplan/max*100, uw=r.unplanned/max*100, dw=r.due/max*100;
+  const segs=(r.onplan>0?`<div class="seg p ${(r.unplanned>0||r.due>0)?'':'only'}" style="left:0;width:${pw}%"></div>`:'')+
+    (r.unplanned>0?`<div class="seg u ${r.onplan>0?'gap':''}" style="left:${pw}%;width:${uw}%;${r.onplan>0?'':'border-radius:3px 0 0 3px;'}${r.due>0?'':'border-radius:0 3px 3px 0;'}"></div>`:'')+
+    (r.due>0?`<div class="seg d ${sp>0?'gap':''}" style="left:${pw+uw}%;width:${dw}%"></div>`:'');
+  const tick=r.plan>0?`<div class="pt" style="left:calc(${r.plan/max*100}% - 1px)"></div>`:'';
+  return `<div class="cat" tabindex="0" data-i="${i}"><div class="n">${NAMES[r.cat]||r.cat}</div><div class="track">${segs}${tick}</div><div class="a">${usd(tot)}<small>${usd(sp)} so far · ${r.plan>0?'plan '+usd(r.plan):'no plan'}</small><small><span class="${over>0?'ov':''}">${over>0?'+':''}${usd(over)} vs plan</span></small></div></div>`}).join('');
+ document.querySelectorAll('#cats .cat').forEach(el=>{const r=rows[+el.dataset.i],tot=r.onplan+r.unplanned+r.due;
+  hover(el,`<b>${NAMES[r.cat]||r.cat}</b>`+row('Plan (T3)',usd(r.plan,1))+row('On planned lines',usd(r.onplan,1))+row('Unplanned',usd(r.unplanned,1))+row('Still due (T2)',usd(r.due,1))+HR+row('Projected',usd(tot,1))+row('vs plan',(tot-r.plan>0?'+':'')+usd(tot-r.plan,1)))});
+})();
+
+/* unplanned lines */
+(function(){
+ if(!DATA.unplanned.length){$('unl').innerHTML='<div class="d" style="color:var(--ink2)">Nothing unplanned so far.</div>';return}
+ const max=DATA.unplanned[0].amt;
+ $('unl').innerHTML=DATA.unplanned.map((u,i)=>{
+  const nm=[subName(u.sub,u.main),subNote(u.sub)];
+  return `<div class="ul" tabindex="0" data-i="${i}"><div class="t">${nm[0]}<span>${NAMES[u.main]||u.main}${nm[1]?' · '+nm[1]:''}</span></div><div class="v">${usd(u.amt)}</div><div class="bar"><b style="width:${u.amt/max*100}%"></b></div></div>`}).join('');
+ document.querySelectorAll('#unl .ul').forEach(el=>{const u=DATA.unplanned[+el.dataset.i];hover(el,`<b>${subName(u.sub,u.main)}</b>`+row('Amount',usd(u.amt,2))+row('Transactions',TX.filter(x=>x.cls==='unplanned'&&x.sub===u.sub).length)+row('Share of unplanned',Math.round(u.amt/tu*100)+'%'))});
+})();
+
+
+/* transactions */
+const fmtD = s => {const [y,m,d]=s.split('-');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+(+d)};
+const ACCT = {'boa joint':'BoA Joint','boa hamly':'BoA Hamly','delta pay from':'Delta'};
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function txTable(list){
+  const s=list.slice().sort((a,b)=>a.d.localeCompare(b.d)||b.amt-a.amt);
+  return `<div class="tw"><table class="tx"><tr><th>Date</th><th>Description</th><th>Account</th><th>Amount</th></tr>`+
+   s.map(x=>`<tr><td class="dt">${fmtD(x.d)}</td><td>${esc(x.desc||'(no description)')}${x.late?'<span class="tag">paid late</span>':''}</td><td class="ac">${esc(ACCT[x.acct]||x.acct||'')}</td><td class="f">${usd(x.amt,2)}</td></tr>`).join('')+
+   `<tr class="tot"><td></td><td>${s.length} transaction${s.length===1?'':'s'}</td><td></td><td class="f">${usd(s.reduce((a,x)=>a+x.amt,0),2)}</td></tr></table></div>`;
+}
+document.querySelectorAll('#unl .ul').forEach(el=>{
+  const u=DATA.unplanned[+el.dataset.i]; const list=TX.filter(x=>x.cls==='unplanned'&&x.sub===u.sub);
+  const d=document.createElement('details'); d.className='tx'; d.innerHTML=`<summary>${list.length} transaction${list.length===1?'':'s'}</summary>`+txTable(list); el.appendChild(d);
+});
+$('tx-count').textContent = TX.length;
+const dueLine = d => `<div class="line"><div class="lh"><span>${subName(d.sub,d.main)}${d.overdue?'<span class="tag od">past planned date</span>':''}<small>T2 plan ${usd(d.t2,2)}${d.paid>0?' · paid so far '+usd(d.paid,2):''}${d.due?' · planned '+d.due:''}</small></span><span class="m">${usd(d.amt,2)}</span></div></div>`;
+(function(){
+  const cats={}; TX.forEach(x=>{(cats[x.main]=cats[x.main]||[]).push(x)});
+  R.forEach(r=>{cats[r.cat]=cats[r.cat]||[]});
+  const order=CATROWS.map(r=>r.cat);
+  $('drill').innerHTML = order.map(c=>{
+    const r=R.find(x=>x.cat===c), list=cats[c]||[];
+    const pl=list.filter(x=>x.cls==='planned'), un=list.filter(x=>x.cls==='unplanned'), dl=DATA.due.filter(d=>d.main===c);
+    const subs={}; pl.forEach(x=>{(subs[x.sub]=subs[x.sub]||[]).push(x)});
+    DATA.planlines.filter(p=>p.main===c&&!subs[p.sub]).forEach(p=>{subs[p.sub]=[]});
+    const planHtml = Object.keys(subs).sort((a,b)=>subs[b].reduce((s,x)=>s+x.amt,0)-subs[a].reduce((s,x)=>s+x.amt,0)||PL[b].plan-PL[a].plan).map(s=>{
+      const l=subs[s], a=l.reduce((q,x)=>q+x.amt,0), p=PL[s].plan;
+      return `<div class="line"><div class="lh"><span>${subName(s,c)}<small>plan ${usd(p,2)}${l.length?'':' · no payment yet'}</small></span><span class="m">${usd(a,2)}<small style="text-align:right">${a-p>0.005?'+':''}${usd(a-p,2)} vs plan so far</small></span></div>${l.length?`<details class="tx"><summary>${l.length} transaction${l.length===1?'':'s'}</summary>${txTable(l)}</details>`:''}</div>`}).join('');
+    const us={}; un.forEach(x=>{(us[x.sub]=us[x.sub]||[]).push(x)});
+    const unHtml = Object.keys(us).sort((a,b)=>us[b].reduce((s,x)=>s+x.amt,0)-us[a].reduce((s,x)=>s+x.amt,0)).map(s=>{
+      const l=us[s], a=l.reduce((q,x)=>q+x.amt,0);
+      return `<div class="line"><div class="lh"><span>${subName(s,c)}<small>no plan amount${subNote(s)?' · '+subNote(s):''}</small></span><span class="m">${usd(a,2)}</span></div><details class="tx"><summary>${l.length} transaction${l.length===1?'':'s'}</summary>${txTable(l)}</details></div>`}).join('');
+    const dueHtml = dl.map(dueLine).join('');
+    return `<details data-c="${esc(c)}"><summary><b>${NAMES[c]||c}</b><span class="figs">${usd(r.onplan+r.unplanned)} so far · ${usd(r.due)} still due · plan ${usd(r.plan)}</span></summary>`+
+      (planHtml?`<div class="grp" data-g="p"><h3><i style="background:var(--planned)"></i>On planned lines · ${usd(r.onplan,2)}</h3>${planHtml}</div>`:'')+
+      (unHtml?`<div class="grp" data-g="u"><h3><i style="background:var(--unplanned)"></i>Unplanned · ${usd(r.unplanned,2)}</h3>${unHtml}</div>`:'')+
+      (dueHtml?`<div class="grp" data-g="d"><h3><i class="dueKey" style="background:repeating-linear-gradient(135deg,var(--due) 0 3px,transparent 3px 6px);border:1px solid var(--due)"></i>Still due · ${usd(r.due,2)}</h3>${dueHtml}</div>`:'')+`</details>`;
+  }).join('');
+  const all=()=>document.querySelectorAll('#drill>details');
+  const G=['all','p','u','d'];
+  const setF=f=>{G.forEach(k=>$('f-'+k).setAttribute('aria-pressed',String(k===f)));
+    all().forEach(d=>{const has=k=>!!d.querySelector('[data-g='+k+']');
+      d.hidden=(f!=='all'&&!has(f));
+      ['p','u','d'].forEach(k=>d.querySelectorAll('[data-g='+k+']').forEach(g=>g.hidden=(f!=='all'&&f!==k)));});};
+  G.forEach(k=>{$('f-'+k).onclick=()=>setF(k)});
+  let open=false;$('f-open').onclick=()=>{open=!open;$('f-open').setAttribute('aria-pressed',String(open));$('f-open').textContent=open?'Collapse all':'Expand all';all().forEach(d=>d.open=open)};
+  /* category bar click opens its drill-down */
+  document.querySelectorAll('#cats .cat').forEach(el=>{el.style.cursor='pointer';el.addEventListener('click',()=>{const c=CATROWS[+el.dataset.i].cat;const d=[...document.querySelectorAll('#drill>details')].find(x=>x.dataset.c===c);if(d){d.hidden=false;d.open=true;d.scrollIntoView({behavior:'smooth',block:'center'})}})});
+})();
+
+/* lists */
+const dueTotal = DATA.due.reduce((s,u)=>s+u.amt,0);
+$('due').innerHTML = DATA.due.length ? DATA.due.map(u=>`<li><span>${subName(u.sub,u.main)}${u.overdue?'<span class="tag od">past planned date</span>':''}<span class="d">${u.due?'Planned for '+u.due:'No planned day'}${u.paid>0?' · '+usd(u.paid,2)+' already paid':''}</span></span><span class="m">${usd(u.amt,2)}</span></li>`).join('')+`<li style="font-weight:600"><span>Total</span><span class="m">${usd(dueTotal,2)}</span></li>` : '<li><span class="d">Nothing is still due.</span></li>';
+const dropTotal = DATA.dropped.reduce((s,u)=>s+u.amt,0);
+$('dropped').innerHTML = DATA.dropped.length ? DATA.dropped.map(u=>`<li><span>${subName(u.sub,u.main)}<span class="d">In T3, not in T2, nothing paid</span></span><span class="m">${usd(u.amt,2)}</span></li>`).join('')+`<li style="font-weight:600"><span>Total</span><span class="m">${usd(dropTotal,2)}</span></li>` : '<li><span class="d">Every T3 line is still in T2 or has been paid.</span></li>';
+$('late').innerHTML = DATA.late.length ? DATA.late.map(u=>`<li><span>${subName(u.sub,u.main)}<span class="d">Planned ${usd(u.plan,2)}, paid ${usd(u.paid,2)}</span></span><span class="m">${usd(u.paid,2)}</span></li>`).join('') : '<li><span class="d">No late payments matched to a plan line.</span></li>';
+
+/* table */
+(function(){
+ const rows=R.slice().sort((a,b)=>((b.onplan+b.unplanned+b.due)-b.plan)-((a.onplan+a.unplanned+a.due)-a.plan));
+ let h='<tr><th>Category</th><th>Plan</th><th>On planned lines</th><th>Unplanned</th><th>Still due</th><th>Projected</th><th>vs plan</th></tr>';
+ rows.forEach(r=>{const t=r.onplan+r.unplanned+r.due,d=t-r.plan;h+=`<tr><td>${NAMES[r.cat]||r.cat}</td><td class="f">${usd(r.plan,2)}</td><td class="f">${usd(r.onplan,2)}</td><td class="f">${usd(r.unplanned,2)}</td><td class="f">${usd(r.due,2)}</td><td class="f">${usd(t,2)}</td><td class="f">${d>0?'+':''}${usd(d,2)}</td></tr>`});
+ h+=`<tr class="tot"><td>Total</td><td class="f">${usd(tp,2)}</td><td class="f">${usd(ton,2)}</td><td class="f">${usd(tu,2)}</td><td class="f">${usd(td,2)}</td><td class="f">${usd(proj,2)}</td><td class="f">${sgn(gapP)}</td></tr>`;
+ $('tbl').innerHTML=h;
+})();
+</script>
+
+</body></html>
